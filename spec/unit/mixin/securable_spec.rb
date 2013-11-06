@@ -107,6 +107,14 @@ describe Chef::Mixin::Securable do
       lambda { @securable.owner "te\0st" }.should raise_error(ArgumentError)
     end
 
+    it "should accept Active Directory-style domain names pulled in via LDAP (on unix hosts)" do
+      lambda { @securable.owner "domain\@user" }.should_not raise_error(ArgumentError)
+      lambda { @securable.owner "domain\\user" }.should_not raise_error(ArgumentError)
+      lambda { @securable.group "domain\@group" }.should_not raise_error(ArgumentError)
+      lambda { @securable.group "domain\\group" }.should_not raise_error(ArgumentError)
+      lambda { @securable.group "domain\\group^name" }.should_not raise_error(ArgumentError)
+    end
+
     it "should not accept group/owner names containing embedded carriage returns" do
       pending "XXX: params_validate needs to be extended to support multi-line regex"
       #lambda { @securable.group "\ntest" }.should raise_error(ArgumentError)
